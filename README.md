@@ -8,9 +8,9 @@ The package contains just three exported functions:
 * `rbExtractYearly`: Extract annual values
 
 Each function operates very similarly and requires:
-* Pointers to the base folder with PRISM data,
-* The name of the PRISM version to extract (i.e., `AN81` or `LT81`)
-* Name(s) of the variables(s) to be extracted, and
+* Pointers to the base folder with PRISM data;
+* The name of the PRISM version to extract (i.e., `AN81` or `LT81`);
+* Name(s) of the variables(s) to be extracted; and
 * A data frame with coordinates and dates.
 
 Users can extract data for the day/month/year of each record plus all preceeding days/months/years across a user-defined temporal window. For example, you could use `rbExtractDaily` to get all daily minimum temperature (`tmin`) values for a location for April 24th, 2014 and the 280 days prior to that date. Or, for example, you could use `rbExtractMonthly` to get the mean monthly value of minimum temperature for April of 2014 and the 18 months preceeding that. Or, using `rbExtractYearly`, you could obtain annual values for 2014 and the 10 years prior to that.  Of course, to get the values for the specied dates and windows preceeding them, you would need to possess the appropriate rasters.
