@@ -1,6 +1,6 @@
 # rainbow
 <img align="right" src="prism.png" height="190"/>
-This R package is for extracting daily, monthly, and annual climate data from the proprietary version of the Parameter Regression on Independent Slopes ([PRISM](https://prism.oregonstate.edu/)) raster data set for the coterminous United States (Daly et al. 2002). Users must have a licensed copy of the PRISM data set.
+This R package is for extracting daily, monthly, and annual climate data from the proprietary version of the Parameter Regression on Independent Slopes or [PRISM](https://prism.oregonstate.edu/) raster data set for the coterminous United States (Daly et al. 2002). Users must have a licensed copy of the PRISM data set.
 
 The package contains just three exported functions:
 * `rbExtractDaily`: Extract daily values
@@ -27,4 +27,4 @@ If for some reason this does not work, you can install the package by downloadin
 Adam B. Smith
 
 ### Literature cited ###
-[Daly](http://dx.doi.org/10.3354/cr022099), C., Gibson, W.P., Taylor, G.H., Johnson, G.L., and Pasteris, P.  2002.  A knowledge-based approach to the statistical mapping of climate.  *Climate Research* 22:99-113.
+Daly, C., Gibson, W.P., Taylor, G.H., Johnson, G.L., and Pasteris, P.  2002.  A knowledge-based approach to the statistical mapping of climate.  *Climate Research* 22:99-113. [DOI: 10.3354/cr022099](http://dx.doi.org/10.3354/cr022099)
