@@ -7,15 +7,16 @@
 \title{Extract daily values of weather variables from a PRISM raster data set}
 \usage{
 rbExtractDaily(
-  prismDir,
-  prismSet = "an81",
-  rastVars,
   x,
+  prismDir,
   yearField = "year",
   monthField = "month",
   domField = "day",
   dateField = NULL,
   longLat = NULL,
+  prismSet = "an81",
+  rastVars = c("tmin", "tmax", "ppt"),
+  rastSuffix = "bil",
   windowYears = 0,
   windowDays = 7,
   verbose = TRUE
@@ -51,7 +52,15 @@ rbExtractYearly(
 )
 }
 \arguments{
+\item{x}{Data frame.}
+
 \item{prismDir}{Character. Path of the base directory in which the rasters are stored. Folder contains a subfolder named \code{an81} or \code{lt81}.}
+
+\item{yearField, monthField, domField}{Character. Names of columns in \code{x} with year, month, and day of month of observation. These must all be integers or \code{NA} values. You can specify these values or use argument \code{dateField} to specify a column with dates.}
+
+\item{dateField}{Name of column in \code{x} with date of each record. Values must be of in YYYY-MM-DD (year-month-day of month) format \emph{or} already of class \code{\link{Date}}. See \code{\link[lubridate]{ymd}} or related functions for more help.}
+
+\item{longLat}{Character vector with two elements. Names of columns in \code{x} with longitude and latitude (in that order). Coordinates will be assumed to be in the same coordinate reference system as the PRISM rasters.}
 
 \item{prismSet}{Character. Name of PRISM data subset. This can be either \code{an81} (daily weather data) or \code{lt81} (monthly and annual weather data).}
 
@@ -66,13 +75,7 @@ rbExtractYearly(
     \item    \code{vpdmin}: Minimum vapor-pressure.
 }}
 
-\item{x}{Data frame.}
-
-\item{yearField, monthField, domField}{Character. Names of columns in \code{x} with year, month, and day of month of observation. These must all be integers or \code{NA} values. You can specify these values or use argument \code{dateField} to specify a column with dates.}
-
-\item{dateField}{Name of column in \code{x} with date of each record. Values must be of in YYYY-MM-DD (year-month-day of month) format \emph{or} already of class \code{\link{Date}}. See \code{\link[lubridate]{ymd}} or related functions for more help.}
-
-\item{longLat}{Character vector with two elements. Names of columns in \code{x} with longitude and latitude (in that order). Coordinates will be assumed to be in the same coordinate reference system as the PRISM rasters.}
+\item{rastSuffix}{Character. The "suffix" at the end of each weather raster. PRISM rasters are usually shipped in 'BIL' format, so normally this should be \code{bil}. However, any other suffix corresponding to a raster type that can be opened by the \code{\link[terra]{rast}} function can be used if the rasters have been converted to another format.}
 
 \item{windowYears, windowMonths, windowDays}{Integers >= 0. Extract data for this many years, months, and/or days before the day of each observation, \emph{plus} the day of observation. Note:
 \itemize{
@@ -113,6 +116,7 @@ y <- rbExtractDaily(
 	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020',
 	prismSet = 'an81',
 	rastVars = 'tmin',
+ rastSuffix = 'tif',
 	x = x,
 	yearField = NULL,
 	monthField = NULL,
@@ -128,6 +132,7 @@ y <- rbExtractMonthly(
 	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020',
 	prismSet = 'lt81',
 	rastVars = 'tmin',
+ rastSuffix = 'tif',
 	x = x,
 	yearField = NULL,
 	monthField = NULL,
@@ -143,6 +148,7 @@ y <- rbExtractYearly(
 	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020',
 	prismSet = 'lt81',
 	rastVars = 'tmin',
+ rastSuffix = 'tif',
 	x = x,
 	yearField = NULL,
 	monthField = NULL,
