@@ -35,20 +35,14 @@ If for some reason this does not work, you can install the package by downloadin
 `	'2019-01-05', '1895-05-01')`  
 `)`  
 
-`# extract daily weather data at the given coordinate  
-`for five dates and the seven days preceding them`  
-`y <- rbExtractDaily(`  
-`	x,`  
-`	dateField = 'date',`  
-`	longLat = c('long', 'lat'),`  
-`	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020/an81',`  
-`	rastVars = 'tmin',`  
-`	rastSuffix = 'tif',`  
-`	windowYears = 0,`  
-`	windowDays = 7,`  
-`	verbose = TRUE`  
-`)`  
+`# extract daily weather data at the given coordinate for five dates and the seven days preceding them`
+`y <- rbExtractDaily(x, dateField = 'date', longLat = c('long', 'lat'), prismDir = 'F:/PRISM/an81', rastVars = 'tmin', rastSuffix = 'tif', windowYears = 0, windowDays = 7)  
 
+`# extract monthly weather data at the given coordinate for five dates and the seven months preceding them`
+`y <- rbExtractMonthly(x, dateField = 'date', longLat = c('long', 'lat'), prismDir = 'F:/PRISM/an81', rastVars = 'tmin', rastSuffix = 'tif', windowYears = 0, windowMonths = 7)  
+
+`# extract annual weather data at the given coordinate for five dates and the seven years preceding them`
+`y <- rbExtractYearly(x, dateField = 'date', longLat = c('long', 'lat'), prismDir = 'F:/PRISM/an81', rastVars = 'tmin', rastSuffix = 'tif', windowYears = 7)  
 
 Adam B. Smith
 
