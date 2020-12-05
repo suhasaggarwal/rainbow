@@ -2,7 +2,7 @@
 
 Extract data from PRISM weather rasters (daily/monthly/annual)
 
-This R package is for extracting daily, monthly, and annual climate data from the proprietary version of the **Parameter Regression on Independent Slopes** or **PRISM** climate raster data set for the coterminous United States (Daly et al. 2002). The [PRISM Climate Group](https://prism.oregonstate.edu) is based at Oregon State University. Extractions can be for specific dates or a user-defined temporal window preceding and including each date.
+This R package is for extracting daily, monthly, and annual climate data from the proprietary version of the **Parameter Regression on Independent Slopes** or **PRISM** climate raster data set for the coterminous United States (Daly et al. 2002). The [PRISM Climate Group](https://prism.oregonstate.edu) is based at Oregon State University. Extractions can be for specific dates or a user-defined temporal window preceding and including each date. The package is especially useful for working with the proprietary version of the data set.  
  
 <img align="right" src="prism.png" height="190"/>  
 
