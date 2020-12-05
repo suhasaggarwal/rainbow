@@ -22,7 +22,7 @@ The `rainbow` package uses functions from `lubridate` for handling dates and `te
 ### Installation ###
 You can install this package in R using this command:
 
-`if (!require(remotes)) install.pakages('remotes')`
+`if (!require(remotes)) install.pakages('remotes')`  
 `remotes::install_github('adamlilith/enmSdm', dependencies=TRUE)`  
 
 If for some reason this does not work, you can install the package by downloading the latest zip/tar file from the `zipTarFiles` directory and installing it manually.
