@@ -28,26 +28,26 @@ You can install this package in R using this command:
 If for some reason this does not work, you can install the package by downloading the latest zip/tar file from the `zipTarFiles` directory and installing it manually.
 
 ### Examples ###
-`x <- data.frame(`
-`	long=rep(-97.66, 5),`
-	lat=rep(38.37, 5),
-	date=c('2015-12-31', '1981-01-05', '2020-12-01',
-	'2019-01-05', '1895-05-01')
-)
+`x <- data.frame(`  
+`	long=rep(-97.66, 5),`  
+`	lat=rep(38.37, 5),`  
+`	date=c('2015-12-31', '1981-01-05', '2020-12-01',`  
+`	'2019-01-05', '1895-05-01')`  
+`)`  
 
-`# extract daily weather data at the given coordinate
-# for five dates and the seven days preceding them`
-`y <- rbExtractDaily(
-	x,
-	dateField = 'date',
-	longLat = c('long', 'lat'),
-	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020/an81',
-	rastVars = 'tmin',
-	rastSuffix = 'tif',
-	windowYears = 0,
-	windowDays = 7,
-	verbose = TRUE
-)`
+`# extract daily weather data at the given coordinate  
+`for five dates and the seven days preceding them`  
+`y <- rbExtractDaily(`  
+`	x,`  
+`	dateField = 'date',`  
+`	longLat = c('long', 'lat'),`  
+`	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020/an81',`  
+`	rastVars = 'tmin',`  
+`	rastSuffix = 'tif',`  
+`	windowYears = 0,`  
+`	windowDays = 7,`  
+`	verbose = TRUE`  
+`)`  
 
 
 Adam B. Smith
