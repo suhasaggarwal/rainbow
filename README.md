@@ -35,7 +35,7 @@ If for some reason this does not work, you can install the package by downloadin
 `	'2019-01-05', '1895-05-01')`  
 `)`  
 
-Extract daily minimum temperature at the given coordinate for five dates and the seven days preceding them:
+Extract daily minimum temperature at the given coordinate for five dates and the seven days preceding them:  
 `y <- rbExtractDaily(`  
 `	x,`  
 `	dateField = 'date',`  
@@ -46,7 +46,7 @@ Extract daily minimum temperature at the given coordinate for five dates and the
 `	windowDays = 7`  
 `)`  
 
-Extract monthly minimum temperature at the given coordinate for five dates and the seven months preceding them:
+Extract monthly minimum temperature at the given coordinate for five dates and the seven months preceding them:  
 `y <- rbExtractMonthly(`  
 `	x,`  
 `	dateField = 'date',`  
@@ -57,7 +57,7 @@ Extract monthly minimum temperature at the given coordinate for five dates and t
 `	windowMonths = 7`  
 `)`  
 
-Extract annual weather data at the given coordinate for five dates and the seven years preceding them:
+Extract annual weather data at the given coordinate for five dates and the seven years preceding them:  
 `y <- rbExtractYearly(`  
 `	x,`  
 `	dateField = 'date',`  
