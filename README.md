@@ -57,7 +57,7 @@ Extract monthly minimum temperature at the given coordinate for five dates and t
 `	windowMonths = 7`  
 `)`  
 
-Extract annual weather data at the given coordinate for five dates and the seven years preceding them:  
+Extract annual minimum temperature at the given coordinate for five dates and the seven years preceding them:  
 `y <- rbExtractYearly(`  
 `	x,`  
 `	dateField = 'date',`  
