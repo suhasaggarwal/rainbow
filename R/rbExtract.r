@@ -1,12 +1,28 @@
-#' Extract daily values of weather variables from a PRISM raster data set
-#' 
-#' These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product (Daly et al. 2002). Depending on the set, PRISM rasters represent interpolated values of daily, monthly, or annual weather. Extractions are done at points (versus polygons or lines, for example). \cr\cr
-#' The basic input is data frame or data frame-like object, with each row representing a location and having a particular date. The function also needs to be pointed toward a folder with PRISM data. The function assumes that the rasters are arranged in the manner in which they are normally supplied by the PRISM Climate Group. That is, for example, each daily/monthly/annual raster is inside a folder corresponding to the year, which in turn is in a folder named either \code{daily} or \code{monthly}, which is inside a folder named after the variable the rasters represent (e.g., \code{tmin}, \code{vpdmax}, etc.), which is inside a folder named either \code{an81} (daily values) or \code{lt81} (monthly and annual values). Not all years or variables are necessarily available, as a license must be purchased and data acquired from the PRISM Climate Group. \cr\cr
+#' @name rbExtract
+#' @rdname rbExtract
+#' @title Extract values of weather variables from a PRISM raster data set
+
+#' @description These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product (Daly et al. 2002). Depending on the set, PRISM rasters represent interpolated values of daily, monthly, or annual weather. Extractions are done at points (versus polygons or lines, for example). \cr\cr
+
+#' The basic input is data frame or data frame-like object, with each row representing a location and having a particular date. The function also needs to be pointed toward a folder with PRISM data. The folder with PRISM data must be structured as:
+#' \itemize{
+#'		\item Base folder (e.g., \code{'C:/PRISM/an81'} or \code{'C:/PRISM/lt81'}), which contains:
+#'		\item A folder named either \code{daily} or \code{monthly}, which contains:
+#'		\item One folder per variable (e.g., \code{tmin}, \code{tmax}, \code{vpdmax}), each of which contain:
+#'		\item One folder per year (e.g., \code{1981}, code{1982}, etc.), each of which contains any of:
+#'		\itemize{
+#'			\item One raster per day named like \code{prism_tdmean_us_30s_19810101.bil}, \code{prism_tdmean_us_30s_19810102.bil}, etc.
+#'			\item One raster per month named like \code{prism_tdmean_us_30s_198101.bil}, \code{prism_tdmean_us_30s_198101.bil}, etc.
+#'			\item One raster representing the yearly value named like \code{prism_tdmean_us_30s_1981.bil}.
+#' 		}
+#' }
+#' \cr
+
 #' The function can extract values corresponding to the day/month/year of each record, plus (optionally) a user-specified window of time prior to the day/month/year of each record. For example, you could use this to extract daily climate data for a site collected on April 22, 2014, and all days prior up to 10 years (April 23, 2004). This function is really a fancy wrapper for \code{\link[terra]{extract}}, but it does the tough job of getting the directory structures right, pulling all needed rasters, and efficiently grouping records to speed extraction. \cr\cr
-#' The function does not assume that data for all PRISM years are available (i.e., if you only have rights to the data from, say, 2015 to 2018), but it does assume that all relevant rasters for a particular year are available within each yearly folder. If rasters preceding a date only partially cover the window, then values for the part covered will be extracted. For example if you try to extract annual values for a window spanning 2010 to 2020 but only have available rasters for 1981 to 2018, then values for 2010 to 2018 will be extracted.
-#'
-#' @param prismDir Character. Path of the base directory in which the rasters are stored. Folder contains a subfolder named \code{an81} or \code{lt81}.
-#' @param prismSet Character. Name of PRISM data subset. This can be either \code{an81} (daily weather data) or \code{lt81} (monthly and annual weather data).
+
+#' The function does not assume that data for all PRISM years are available, but it does assume that all relevant rasters for a particular year are available within each yearly folder. If rasters preceding a date only partially cover the window, then values for the part covered will be extracted. For example if you try to extract annual values for a window spanning 2010 to 2020 but only have available rasters for 1981 to 2018, then values for 2010 to 2018 will be extracted. Values that cannot be extracted are represented by \code{NA} in the output.
+
+#' @param prismDir Character. Path of the base directory in which the rasters are stored. It must have a structure with subfolders as described above.
 #' @param rastVars Name of variable(s) to extract. Valid values are:
 #' \itemize{
 #'		\item	\code{ppt}: Precipitation.
@@ -19,21 +35,22 @@
 #' }
 #' @param rastSuffix Character. The "suffix" at the end of each weather raster. PRISM rasters are usually shipped in 'BIL' format, so normally this should be \code{bil}. However, any other suffix corresponding to a raster type that can be opened by the \code{\link[terra]{rast}} function can be used if the rasters have been converted to another format.
 #' @param x Data frame.
-#' @param yearField,monthField,domField Character. Names of columns in \code{x} with year, month, and day of month of observation. These must all be integers or \code{NA} values. You can specify these values or use argument \code{dateField} to specify a column with dates.
-#' @param dateField Name of column in \code{x} with date of each record. Values must be of in YYYY-MM-DD (year-month-day of month) format \emph{or} already of class \code{\link{Date}}. See \code{\link[lubridate]{ymd}} or related functions for more help.
+#' @param dateField Either:
+#' \itemize{
+#'		\item 	Name of column in \code{x} with date of each record. Values must be of in YYYY-MM-DD (year-month-day of month) format \emph{or} already of class \code{\link{Date}}. See \code{\link[lubridate]{ymd}} or related functions for more help.
+#'		\item   Names of columns with year, month, and day of month of each record (in that order). Months must be numeric (i.e., 10, not "October").
+#' }
 #' @param longLat Character vector with two elements. Names of columns in \code{x} with longitude and latitude (in that order). Coordinates will be assumed to be in the same coordinate reference system as the PRISM rasters.
 #' @param windowYears,windowMonths,windowDays Integers >= 0. Extract data for this many years, months, and/or days before the day of each observation, \emph{plus} the day of observation. Note:
 #' \itemize{
-#'		\item If \code{prismSet} is \code{an81} (daily), then only \code{windowYears} and \code{windowDays} are used. Note that the difference between using, say, \code{windowYears = 1} and \code{windowDays = 365} is that the former can accommodate leap days whereas the latter just extracts the 365 days prior (which may be less than a full calendar year if the timespan encompasses a leap day).
-#'		\item If \code{prismSet} is \code{lt81} (monthly), then only \code{windowYears} and \code{windowMonths} are used.
-#'		\item If \code{prismSet} is \code{lt81} (annual), then only \code{windowYears}is used.
+#'		\item For daily data, only \code{windowYears} and \code{windowDays} are used. Note that the difference between using, say, \code{windowYears = 1} and \code{windowDays = 365} is that the former can accommodate leap days whereas the latter just extracts the 365 days prior (which may be less than a full calendar year if the timespan encompasses a leap day).
+#'		\item For monthly data, only \code{windowYears} and \code{windowMonths} are used.
+#'		\item For annual data, only \code{windowYears} is used.
 #' }
-#' To get only data for the day/month/year of each record, set all of the respective \code{window} arguments to 0.
+#' To get only data for the day/month/year of each record, set all of the respective \code{window} arguments to 0 (default).
 #' @param verbose Logical. If \code{TRUE} (default), show progress.
-#'
 #' @return Matrix with one row per row in \code{x}. \code{NA} values represent days/months/years that did not fall within the specified window or for which rasters were unavailable. 
 #' @references Daly, C., Gibson, W.P., Taylor, G.H., Johnson, G.L., and Pasteris, P.  2002.  A knowledge-based approach to the statistical mapping of climate. \emph{Climate Research} 22:99-113. \href{http://dx.doi.org/10.3354/cr022099}{DOI: 10.3354/cr022099}
-#' @export
 #' @examples
 #' \dontrun{
 #' x <- data.frame(
@@ -44,86 +61,73 @@
 #' )
 #' 
 #' y <- rbExtractDaily(
-#' 	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020',
-#' 	prismSet = 'an81',
-#' 	rastVars = 'tmin',
-#'  rastSuffix = 'tif',
-#' 	x = x,
-#' 	yearField = NULL,
-#' 	monthField = NULL,
-#' 	domField = NULL,
+#' 	x,
 #' 	dateField = 'date',
 #' 	longLat = c('long', 'lat'),
+#' 	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020/an81',
+#' 	rastVars = 'tmin',
+#' 	rastSuffix = 'tif',
 #' 	windowYears = 0,
 #' 	windowDays = 7,
 #' 	verbose = TRUE
 #' )
 #' 
 #' y <- rbExtractMonthly(
-#' 	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020',
-#' 	prismSet = 'lt81',
-#' 	rastVars = 'tmin',
-#'  rastSuffix = 'tif',
-#' 	x = x,
-#' 	yearField = NULL,
-#' 	monthField = NULL,
-#' 	domField = NULL,
+#' 	x,
 #' 	dateField = 'date',
 #' 	longLat = c('long', 'lat'),
-#' 	windowYears = 1,
-#' 	windowMonths = 1,
+#' 	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020/lt81',
+#' 	rastVars = 'tmin',
+#' 	rastSuffix = 'tif',
+#' 	windowYears = 0,
+#' 	windowMonths = 5,
 #' 	verbose = TRUE
 #' )
 #' 
 #' y <- rbExtractYearly(
-#' 	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020',
-#' 	prismSet = 'lt81',
-#' 	rastVars = 'tmin',
-#'  rastSuffix = 'tif',
-#' 	x = x,
-#' 	yearField = NULL,
-#' 	monthField = NULL,
-#' 	domField = NULL,
+#' 	x,
 #' 	dateField = 'date',
 #' 	longLat = c('long', 'lat'),
+#' 	prismDir = 'F:/ecology/Climate/PRISM acquired in 2020/lt81',
+#' 	rastVars = 'tmin',
+#' 	rastSuffix = 'tif',
 #' 	windowYears = 3,
 #' 	verbose = TRUE
 #' )
 #' 
 #' }
+NULL
+
+#' @describeIn rbExtract Extract daily values of weather variables from a PRISM raster data set
 #' @export
 
 rbExtractDaily <- function(
 	x,
 	prismDir,
-	yearField = 'year',
-	monthField = 'month',
-	domField = 'day',
-	dateField = NULL,
-	longLat = NULL,
-	prismSet = 'an81',
-	rastVars = c('tmin', 'tmax', 'ppt'),
+	rastVars = c('tmin', 'tmax', 'tmean', 'ppt'),
 	rastSuffix = 'bil',
+	dateField = 'date',
+	longLat = NULL,
 	windowYears = 0,
-	windowDays = 7,
+	windowDays = 0,
 	verbose = TRUE
 ) {
 
 	### get dates
-	dates <- .getDates(x, yearField, monthField, domField, dateField)
+	dates <- .getDates(x, dateField)
 	
-	### DAILY PRISM extraction
-	##########################
-	if (tolower(prismSet) == 'an81') {
+	recordDates <- dates
+	dates <- unique(sort(dates))
 
-		recordDates <- dates
-		dates <- unique(sort(dates))
-
-		### by VARIABLE
-		for (rastVar in rastVars) {
+	### by VARIABLE
+	for (rastVar in rastVars) {
+	
+		if (!dir.exists(paste0(prismDir, '/', rastVar))) {
+			warning(paste0('There is no directory for ', rastVar, '.'))
+		} else {
 		
 			### get available years
-			yearsAvail <- list.dirs(paste0(prismDir, '/', prismSet, '/', rastVar, '/daily'), full.names=FALSE, recursive=FALSE)
+			yearsAvail <- list.dirs(paste0(prismDir, '/', rastVar, '/daily'), full.names=FALSE, recursive=FALSE)
 			yearsAvail <- as.integer(yearsAvail)
 
 			earliestRasterDate <- lubridate::make_date(min(yearsAvail), '01', '01')
@@ -132,7 +136,7 @@ rbExtractDaily <- function(
 			### create data frame to store extracted values
 			daysNeeded <- windowDays + ceiling(365.25 * windowYears)
 			thisOut <- matrix(NA, nrow=nrow(x), ncol=daysNeeded + 1)
-			colnames(thisOut) <- paste0(prismSet, '_', rastVar, '_', daysNeeded:0, 'daysPrior')
+			colnames(thisOut) <- paste0(rastVar, '_', daysNeeded:0, 'daysPrior')
 
 			### extract by date
 			for (countDate in seq_along(dates)) {
@@ -162,7 +166,7 @@ rbExtractDaily <- function(
 			
 					rastDates <- paste0(yearsNeeded, sprintf('%02.0f', monthsNeeded), sprintf('%02.0f', daysNeeded)) 
 			
-					rastsNeeded <- paste0(prismDir, '/', prismSet, '/', rastVar, '/daily/', yearsNeeded, '/prism_', rastVar, '_us_30s_', rastDates, '.', rastSuffix)
+					rastsNeeded <- paste0(prismDir, '/', rastVar, '/daily/', yearsNeeded, '/prism_', rastVar, '_us_30s_', rastDates, '.', rastSuffix)
 
 					# get rasters
 					rasts <- terra::rast(rastsNeeded)
@@ -188,27 +192,24 @@ rbExtractDaily <- function(
 			} else {
 				thisOut
 			}
+			
+		} # directory for variable exists
 		
-		} # next variable
-		
-	}
+	} # next variable
 	
 	while (all(is.na(out[ , 1]))) out <- out[ , 2:ncol(out), drop=FALSE]
 	out
 
 }
 
-#' @describeIn rbExtractDaily Extract monthly values of weather variables from a PRISM raster data set
+#' @describeIn rbExtract Extract monthly values of weather variables from a PRISM raster data set
 #' @export
 rbExtractMonthly <- function(
-	prismDir,
-	prismSet = 'lt81',
-	rastVars,
 	x,
-	yearField = 'year',
-	monthField = 'month',
-	domField = 'day',
-	dateField = NULL,
+	prismDir,
+	rastVars = c('tmin', 'tmax', 'tmean', 'ppt'),
+	rastSuffix = 'bil',
+	dateField = 'date',
 	longLat = NULL,
 	windowYears = 0,
 	windowMonths = 0,
@@ -216,29 +217,29 @@ rbExtractMonthly <- function(
 ) {
 
 	### get dates
-	dates <- .getDates(x, yearField, monthField, domField, dateField)
+	dates <- .getDates(x, dateField)
 
 	### allocate window monthly "years" to years
 	windowYears <- windowYears + floor(windowMonths / 12)
 	windowMonths <- windowMonths %% 12
 
-	### DAILY PRISM extraction
-	##########################
-	if (tolower(prismSet) == 'lt81') {
+	recordYears <- lubridate::year(dates)
+	recordMonths <- lubridate::month(dates)
+	recordYearsMonths <- cbind(recordYears, recordMonths)
 
-		recordYears <- lubridate::year(dates)
-		recordMonths <- lubridate::month(dates)
-		recordYearsMonths <- cbind(recordYears, recordMonths)
+	uniqueYearsMonths <- recordYearsMonths[!duplicated(recordYearsMonths), ]
+	uniqueYearsMonths <- uniqueYearsMonths[order(uniqueYearsMonths[ , 2]), ]
+	uniqueYearsMonths <- uniqueYearsMonths[order(uniqueYearsMonths[ , 1]), ]
+	
+	### by VARIABLE
+	for (rastVar in rastVars) {
+	
+		if (!dir.exists(paste0(prismDir, '/', rastVar))) {
+			warning(paste0('There is no directory for ', rastVar, '.'))
+		} else {
 
-		uniqueYearsMonths <- recordYearsMonths[!duplicated(recordYearsMonths), ]
-		uniqueYearsMonths <- uniqueYearsMonths[order(uniqueYearsMonths[ , 2]), ]
-		uniqueYearsMonths <- uniqueYearsMonths[order(uniqueYearsMonths[ , 1]), ]
-		
-		### by VARIABLE
-		for (rastVar in rastVars) {
-		
 			### get available years
-			yearsAvail <- list.dirs(paste0(prismDir, '/', prismSet, '/', rastVar, '/monthly'), full.names=FALSE, recursive=FALSE)
+			yearsAvail <- list.dirs(paste0(prismDir, '/', rastVar, '/monthly'), full.names=FALSE, recursive=FALSE)
 			yearsAvail <- as.integer(yearsAvail)
 
 			earliestRastYearMonth <- cbind(min(yearsAvail), 1)
@@ -247,7 +248,7 @@ rbExtractMonthly <- function(
 			### create data frame to store extracted values
 			monthsNeeded <- windowMonths + (12 * windowYears)
 			thisOut <- matrix(NA, nrow=nrow(x), ncol=monthsNeeded + 1)
-			colnames(thisOut) <- paste0(prismSet, '_', rastVar, '_', monthsNeeded:0, 'monthsPrior')
+			colnames(thisOut) <- paste0(rastVar, '_', monthsNeeded:0, 'monthsPrior')
 
 			### extract by date
 			for (i in 1:nrow(uniqueYearsMonths)) {
@@ -288,7 +289,7 @@ rbExtractMonthly <- function(
 					monthsNeeded <- yearsMonthsNeeded[ , 2]
 					
 					rastDates <- paste0(yearsNeeded, sprintf('%02.0f', monthsNeeded)) 
-					rastsNeeded <- paste0(prismDir, '/', prismSet, '/', rastVar, '/monthly/', yearsNeeded, '/prism_', rastVar, '_us_30s_', rastDates, '.', rastSuffix)
+					rastsNeeded <- paste0(prismDir, '/', rastVar, '/monthly/', yearsNeeded, '/prism_', rastVar, '_us_30s_', rastDates, '.', rastSuffix)
 
 					# get rasters
 					rasts <- terra::rast(rastsNeeded)
@@ -315,47 +316,45 @@ rbExtractMonthly <- function(
 			} else {
 				thisOut
 			}
-		
-		} # next variable
-		
-	}
+			
+		} # directory for variable exists
+	
+	} # next variable
 	
 	while (all(is.na(out[ , 1]))) out <- out[ , 2:ncol(out), drop=FALSE]
 	out
 
 }
 
-#' @describeIn rbExtractDaily Extract annual values of weather variables from a PRISM raster data set
+#' @describeIn rbExtract Extract annual values of weather variables from a PRISM raster data set
 #' @export
 rbExtractYearly <- function(
-	prismDir,
-	prismSet = 'lt81',
-	rastVars,
 	x,
-	yearField = 'year',
-	monthField = 'month',
-	domField = 'day',
-	dateField = NULL,
+	prismDir,
+	rastVars = c('tmin', 'tmax', 'tmean', 'ppt'),
+	rastSuffix = 'bil',
+	dateField = 'date',
 	longLat = NULL,
 	windowYears = 0,
 	verbose = TRUE
 ) {
 
 	### get dates
-	dates <- .getDates(x, yearField, monthField, domField, dateField)
+	dates <- .getDates(x, dateField)
 
-	### extract annual data
-	if (tolower(prismSet) == 'lt81') {
+	# get record years
+	recordYears <- lubridate::year(dates)
+	uniqueYears <- sort(unique(recordYears))
 
-		# get record years
-		recordYears <- lubridate::year(dates)
-		uniqueYears <- sort(unique(recordYears))
-
-		### by VARIABLE
-		for (rastVar in rastVars) {
+	### by VARIABLE
+	for (rastVar in rastVars) {
+	
+		if (!dir.exists(paste0(prismDir, '/', rastVar))) {
+			warning(paste0('There is no directory for ', rastVar, '.'))
+		} else {
 		
 			### get available years
-			yearsAvail <- list.dirs(paste0(prismDir, '/', prismSet, '/', rastVar, '/monthly'), full.names=FALSE, recursive=FALSE)
+			yearsAvail <- list.dirs(paste0(prismDir, '/', rastVar, '/monthly'), full.names=FALSE, recursive=FALSE)
 			yearsAvail <- as.integer(yearsAvail)
 			
 			earliestRasterYear <- min(yearsAvail)
@@ -363,7 +362,7 @@ rbExtractYearly <- function(
 
 			### create matrix to store extracted values
 			thisOut <- matrix(NA, nrow=nrow(x), ncol=windowYears + 1)
-			colnames(thisOut) <- paste0(prismSet, '_', rastVar, '_', windowYears:0, 'yearsPrior')
+			colnames(thisOut) <- paste0(rastVar, '_', windowYears:0, 'yearsPrior')
 
 			### extract by date
 			for (i in seq_along(uniqueYears)) {
@@ -383,7 +382,7 @@ rbExtractYearly <- function(
 					
 					yearsNeeded <- windowStartYear:windowEndYear
 					
-					rastsNeeded <- paste0(prismDir, '/', prismSet, '/', rastVar, '/monthly/', yearsNeeded, '/prism_', rastVar, '_us_30s_', yearsNeeded, '.', rastSuffix)
+					rastsNeeded <- paste0(prismDir, '/', rastVar, '/monthly/', yearsNeeded, '/prism_', rastVar, '_us_30s_', yearsNeeded, '.', rastSuffix)
 
 					# get rasters
 					rasts <- terra::rast(rastsNeeded)
@@ -415,10 +414,10 @@ rbExtractYearly <- function(
 			} else {
 				thisOut
 			}
-		
-		} # next variable
-
-	} # if MONTHLY PRISM
+	
+		} # directory for variable exists
+	
+	} # next variable
 
 	while (all(is.na(out[ , 1]))) out <- out[ , 2:ncol(out), drop=FALSE]
 	out
@@ -426,22 +425,22 @@ rbExtractYearly <- function(
 }
 
 ### get dates from input data frame
-.getDates <- function(x, yearField, monthField, domField, dateField) {
+.getDates <- function(x, dateField) {
 	
-	if (!is.null(yearField) & !is.null(monthField) & !is.null(domField)) {
+	if (length(dateField) == 3) {
 		dates <- lubridate::make_date(
-			year=x[ , yearField, drop=TRUE],
-			month=x[ , monthField, drop=TRUE],
-			day=x[ , domField]
+			year=x[ , dateField[1], drop=TRUE],
+			month=x[ , dateField[2], drop=TRUE],
+			day=x[ , dateField[3]]
 		)
-	} else if (!is.null(dateField)) {
+	} else if (length(dateField) == 1) {
 		if (class(x[ , dateField]) != 'Date') {
 			dates <- lubridate::ymd(x[ , dateField, drop=TRUE])
 		} else {
 			dates <- x[ , dateField, drop=TRUE]
 		}
 	} else {
-		stop('You must specify either "yearField", "monthField", and "domField" OR "dateField."')
+		stop('Argument "dateField" must be a character vector with one or three elements.')
 	}
 	
 	dates

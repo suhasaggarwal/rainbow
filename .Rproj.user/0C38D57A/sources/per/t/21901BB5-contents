@@ -1,2 +1,2 @@
-rainbow 0.0.9001
+rainbow 0.0.1
 All the colors are here!
