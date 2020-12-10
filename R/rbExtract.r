@@ -142,7 +142,7 @@ rbExtractDaily <- function(
 			for (countDate in seq_along(dates)) {
 			
 				date <- dates[countDate]
-				if (verbose) print(date); flush.console()
+				if (verbose) print(paste0(rastVar, ' ', date)); flush.console()
 			
 				# get date of window start
 				windowStartDate <- date
@@ -254,7 +254,7 @@ rbExtractMonthly <- function(
 			for (i in 1:nrow(uniqueYearsMonths)) {
 			
 				yearMonth <- uniqueYearsMonths[i, , drop=FALSE]
-				if (verbose) print(paste0(yearMonth[1, 1], '-', sprintf('%02.0f', yearMonth[1, 2]))); flush.console()
+				if (verbose) print(paste0(rastVar, ' ', yearMonth[1, 1], '-', sprintf('%02.0f', yearMonth[1, 2]))); flush.console()
 			
 				# get date of window start
 				windowStart <- yearMonth
@@ -368,7 +368,7 @@ rbExtractYearly <- function(
 			for (i in seq_along(uniqueYears)) {
 			
 				year <- uniqueYears[i]
-				if (verbose) cat(' ', as.integer(year), '\n'); flush.console()
+				if (verbose) cat(' ', rastVar, as.integer(year), '\n'); flush.console()
 			
 				# get date of window start
 				startYear <- year - windowYears
