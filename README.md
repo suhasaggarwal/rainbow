@@ -70,4 +70,7 @@ Extract annual minimum temperature at the given coordinate for five dates and th
 Adam B. Smith
 
 ### Literature cited ###
-Daly, C., Gibson, W.P., Taylor, G.H., Johnson, G.L., and Pasteris, P.  2002.  A knowledge-based approach to the statistical mapping of climate.  *Climate Research* 22:99-113. [DOI: 10.3354/cr022099](http://dx.doi.org/10.3354/cr022099)
+Daly, C., Halbleib, M., Smith, J.I., Gibson, W.P., Doggett, M.K., Taylor, G.H., Curtis, J., and Pasteris, P.A. 2008. Physiographically-sensitive mapping of temperature and precipitation across the conterminous United States. International Journal of Climatology, 28: 2031-2064 [DOI: 10.1002/joc.1688](https://doi.org/10.1002/joc.1688)  
+
+Daly, C., J.I. Smith, and K.V. Olson.  2015.  Mapping atmospheric moisture climatologies across the conterminous United States. PloS ONE 10:e0141140. [DOI: 10.1371/journal.pone.0141140](doi:10.1371/journal.pone.0141140)
+
