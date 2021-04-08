@@ -1,5 +1,5 @@
-#' @name rbExtract
-#' @rdname rbExtract
+#' @name prismExtract
+#' @rdname prismExtract
 #' @title Extract values of weather variables from a PRISM raster data set
 
 #' @description These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product (Daly et al. 2008 and 2015). Depending on the set, PRISM rasters represent interpolated values of daily, monthly, or annual weather. Extractions are done at points (versus polygons or lines, for example). \cr\cr
@@ -50,8 +50,6 @@
 #' To get only data for the day/month/year of each record, set all of the respective \code{window} arguments to 0 (default).
 #' @param verbose Logical. If \code{TRUE} (default), show progress.
 #' @return Matrix with one row per row in \code{x}. \code{NA} values represent days/months/years that did not fall within the specified window or for which rasters were unavailable. 
-#' @references Daly, C., Halbleib, M., Smith, J.I., Gibson, W.P., Doggett, M.K., Taylor, G.H., Curtis, J., and Pasteris, P.A. 2008. Physiographically-sensitive mapping of temperature and precipitation across the conterminous United States. International Journal of Climatology, 28: 2031-2064 \href{https://doi.org/10.1002/joc.1688}{DOI: 10.1002/joc.1688}
-#' @references Daly, C., J.I. Smith, and K.V. Olson.  2015.  Mapping atmospheric moisture climatologies across the conterminous United States. PloS ONE 10:e0141140. \href{doi:10.1371/journal.pone.0141140}{DOI: 10.1371/journal.pone.0141140}.
 #' @examples
 #' \dontrun{
 #' x <- data.frame(
@@ -61,7 +59,7 @@
 #' 	'2019-01-05', '1895-05-01')
 #' )
 #' 
-#' y <- rbExtractDaily(
+#' y <- prismExtractDaily(
 #' 	x,
 #' 	dateField = 'date',
 #' 	longLat = c('long', 'lat'),
@@ -73,7 +71,7 @@
 #' 	verbose = TRUE
 #' )
 #' 
-#' y <- rbExtractMonthly(
+#' y <- prismExtractMonthly(
 #' 	x,
 #' 	dateField = 'date',
 #' 	longLat = c('long', 'lat'),
@@ -85,7 +83,7 @@
 #' 	verbose = TRUE
 #' )
 #' 
-#' y <- rbExtractYearly(
+#' y <- prismExtractYearly(
 #' 	x,
 #' 	dateField = 'date',
 #' 	longLat = c('long', 'lat'),
@@ -99,10 +97,10 @@
 #' }
 NULL
 
-#' @describeIn rbExtract Extract daily values of weather variables from a PRISM raster data set
+#' @describeIn prismExtract Extract daily values of weather variables from a PRISM raster data set
 #' @export
 
-rbExtractDaily <- function(
+prismExtractDaily <- function(
 	x,
 	prismDir,
 	rastVars = c('tmin', 'tmax', 'tmean', 'ppt'),
@@ -203,9 +201,9 @@ rbExtractDaily <- function(
 
 }
 
-#' @describeIn rbExtract Extract monthly values of weather variables from a PRISM raster data set
+#' @describeIn prismExtract Extract monthly values of weather variables from a PRISM raster data set
 #' @export
-rbExtractMonthly <- function(
+prismExtractMonthly <- function(
 	x,
 	prismDir,
 	rastVars = c('tmin', 'tmax', 'tmean', 'ppt'),
@@ -327,9 +325,9 @@ rbExtractMonthly <- function(
 
 }
 
-#' @describeIn rbExtract Extract annual values of weather variables from a PRISM raster data set
+#' @describeIn prismExtract Extract annual values of weather variables from a PRISM raster data set
 #' @export
-rbExtractYearly <- function(
+prismExtractYearly <- function(
 	x,
 	prismDir,
 	rastVars = c('tmin', 'tmax', 'tmean', 'ppt'),

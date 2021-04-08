@@ -1,8 +1,8 @@
-Package: rainbow
+Package: airUpThere
 Type: Package
 Title: Extract values from PRISM weather rasters (daily/monthly/annual)
 Version: 0.0.1
-Date: 2020-12-04
+Date: 2021-03-17
 Author: Adam B. Smith
 Maintainer: Adam B. Smith <adam.smith@mobot.org>
 Description: This package automates extraction of weather data from
